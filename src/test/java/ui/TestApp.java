@@ -1,50 +1,26 @@
-import io.appium.java_client.AppiumDriver;
+package ui;
 import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
-
-
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.openqa.selenium.OutputType.FILE;
 
-public class TestApp {
-    AppiumDriver driver = null;
+
+public class TestApp extends BaseTest {
+
     String destDir;
     DateFormat dateFormat;
 
-    @BeforeMethod
-    public void setUp() throws InterruptedException {
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability("platformName", "Android");
-        desiredCapabilities.setCapability("deviceName", "Nexus 6 API 27");
-        desiredCapabilities.setCapability("platformVersion", "8.1");
-        desiredCapabilities.setCapability("newCommandTimeout", "300000");
-        desiredCapabilities.setCapability("app", new File("C:/Users/nilch/IdeaProjects/demos/.idea/app/ApiDemos-debug.apk"));
 
-        //1. Run app
-
-        try {
-            driver = new AndroidDriver<MobileElement>(new URL("http://0.0.0.0:4723/wd/hub"), desiredCapabilities);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-
-        }
-        System.out.println(driver.getPageSource());
-    }
 
     @Test
     public void testCase1() {
@@ -94,8 +70,10 @@ public class TestApp {
 
     @Test
     public void testCase2() throws IOException {
+        //ДОБАВИть ВЕЙТЕР
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         //  1. open Media
-        driver.findElement(By.xpath("//android.widget.TextView[@content-desc='Media']")).click();
+        driver.findElement(By.xpath("//android.widget.TextView[contains(@content-desc,\"Media\")]")).click();
         //2. open Media Player
         driver.findElement(By.id("MediaPlayer")).click();
         //3. OPEN "Play audio from Resources"
@@ -110,14 +88,20 @@ public class TestApp {
 
 
         WebElement audioText = driver.findElement(By.xpath("//android.widget.TextView [contains(@text,'Playing audio...')]"));
+        boolean element =true ;
+        Assert.assertTrue(element, "Playing audio...");
 // не придумала как можно проверить что звук появился
 //       if (audioText.equals("Playing audio...")) {
 //           System.out.println("text 'Playing audio...' is shown");
 //      } else {
 //           System.out.println("ШОТО НЕ ТО=(");
 //       }
-
+        @AfterMethod
+        public void End() {
+            driver.quit();
+        }
     }
+
 
     public void takeScreenShot() {
         // Set folder name to store screenshots.
